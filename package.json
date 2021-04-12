@@ -1,0 +1,30 @@
+{
+  "name": "test-task",
+  "version": "1.0.0",
+  "description": "javaScript test task",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/People094/test-task.git"
+  },
+  "keywords": [
+    "javaScript",
+    "node.js"
+  ],
+  "author": "Anton Semenov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/People094/test-task/issues"
+  },
+  "homepage": "https://github.com/People094/test-task#readme",
+  "devDependencies": {
+    "eslint": "^6.8.0 ",
+    "eslint-plugin-import": "^2.22.1"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
