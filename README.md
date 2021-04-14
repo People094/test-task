@@ -3,3 +3,7 @@
 ## For calculate fee use command:
 
 ```node app.js input.json```
+
+## For running test use:
+
+```npm run test``` or ```jest``` command

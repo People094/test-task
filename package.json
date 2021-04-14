@@ -2,9 +2,9 @@
   "name": "test-task",
   "version": "1.0.0",
   "description": "javaScript test task",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "npm test"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,9 @@
   },
   "homepage": "https://github.com/People094/test-task#readme",
   "devDependencies": {
-    "eslint": "^6.8.0 ",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "jest": "^26.6.3",
     "node-fetch": "^2.6.1"
   },
   "dependencies": {
