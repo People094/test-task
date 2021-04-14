@@ -6,7 +6,6 @@ const {
   getWeekNumber,
   getCashInFee,
   getCashOutFee,
-  getConfigs,
 } = require('./script');
 
 jest.mock('node-fetch');
