@@ -109,15 +109,20 @@ const calculateCommission = async () => {
   return data.map((transaction) => {
     const { type, operation: { amount } } = transaction;
     if (type === 'cash_in') {
-      console.log(getCashInFee(amount, configs.cashInConfig));
-    } else if (type === 'cash_out') {
+      const fee = getCashInFee(amount, configs.cashInConfig);
+      console.log(fee);
+      return fee;
+    }
+    if (type === 'cash_out') {
       const {
         fee,
         totalCashOutByUser,
       } = getCashOutFee(transaction, totalCashOut, configs.cashOutConfigs);
       totalCashOut = totalCashOutByUser;
       console.log(fee);
+      return fee;
     }
+    return '';
   });
 };
 
