@@ -4,6 +4,6 @@
 
 ```node app.js input.json```
 
-## For running test use:
+## For running tests use:
 
 ```npm run test``` or ```jest``` command

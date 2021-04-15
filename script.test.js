@@ -11,7 +11,7 @@ const {
 jest.mock('node-fetch');
 
 describe('Get cash in config', () => {
-  test('should return data from backend', async () => {
+  it('should return data from backend', async () => {
     const expectedResponse = {
       percents: 0.03,
       max: {
@@ -27,7 +27,7 @@ describe('Get cash in config', () => {
 });
 
 describe('Get cash out natural person config', () => {
-  test('should return data from backend', async () => {
+  it('should return data from backend', async () => {
     const expectedResponse = {
       percents: 0.3,
       week_limit: {
@@ -43,7 +43,7 @@ describe('Get cash out natural person config', () => {
 });
 
 describe('Get cash out legal person config', () => {
-  test('should return data from backend', async () => {
+  it('should return data from backend', async () => {
     const expectedResponse = {
       percents: 0.3,
       min: {
@@ -59,12 +59,12 @@ describe('Get cash out legal person config', () => {
 });
 
 describe('Get week number for', () => {
-  test('2016-01-05', () => {
+  it('2016-01-05', () => {
     const date = '2016-01-05';
     expect(getWeekNumber(date)).toBe(1);
   });
 
-  test('2016-02-15', () => {
+  it('2016-02-15', () => {
     const date = '2016-02-15';
     expect(getWeekNumber(date)).toBe(7);
   });
@@ -79,11 +79,11 @@ describe('Cash in fee', () => {
     },
   };
 
-  test('for 200 EUR', () => {
+  it('for 200 EUR', () => {
     expect(getCashInFee(200, config)).toBe('0.06');
   });
 
-  test('for 1 million EUR', () => {
+  it('for 1 million EUR', () => {
     expect(getCashInFee(1000000, config)).toBe('5.00');
   });
 });
@@ -108,7 +108,7 @@ describe('Cash out fee', () => {
 
   const totalCashOut = {};
 
-  test('for 300.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
+  it('for 300.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
     const transaction = {
       date: '2016-01-06',
       user_id: 2,
@@ -122,7 +122,7 @@ describe('Cash out fee', () => {
     expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('0.90');
   });
 
-  test('for 30.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
+  it('for 30.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
     const transaction = {
       date: '2016-01-06',
       user_id: 2,
@@ -136,7 +136,7 @@ describe('Cash out fee', () => {
     expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('0.50');
   });
 
-  test('for 30000.00 EUR, user_id: 1, date: 2016-01-06, natural person', () => {
+  it('for 30000.00 EUR, user_id: 1, date: 2016-01-06, natural person', () => {
     const transaction = {
       date: '2016-01-06',
       user_id: 1,
@@ -150,7 +150,7 @@ describe('Cash out fee', () => {
     expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('87.00');
   });
 
-  test('for 1000 EUR, user_id: 1, date: 2016-01-07, natural person', () => {
+  it('for 1000 EUR, user_id: 1, date: 2016-01-07, natural person', () => {
     const transaction = {
       date: '2016-01-07',
       user_id: 1,
@@ -164,7 +164,7 @@ describe('Cash out fee', () => {
     expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('3.00');
   });
 
-  test('for 1000 EUR, user_id: 3, date: 2016-01-10, natural person', () => {
+  it('for 1000 EUR, user_id: 3, date: 2016-01-10, natural person', () => {
     const transaction = {
       date: '2016-01-10',
       user_id: 3,
