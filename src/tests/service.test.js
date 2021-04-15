@@ -3,7 +3,7 @@ const {
   getCashInConfig,
   getCashOutNaturalPersonConfig,
   getCashOutLegalPersonConfig,
-} = require('../script');
+} = require('../service');
 
 jest.mock('node-fetch');
 

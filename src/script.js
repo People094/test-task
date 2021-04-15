@@ -128,9 +128,6 @@ const calculateCommission = async () => {
 
 module.exports = {
   calculateCommission,
-  getCashInConfig,
-  getCashOutNaturalPersonConfig,
-  getCashOutLegalPersonConfig,
   getWeekNumber,
   getCashInFee,
   getCashOutFee,
