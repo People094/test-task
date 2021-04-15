@@ -1,21 +1,10 @@
-const fetch = require('node-fetch');
+const {
+  getCashInConfig,
+  getCashOutNaturalPersonConfig,
+  getCashOutLegalPersonConfig,
+} = require('./service');
 
-const data = require(`./${process.argv[2]}`);
-
-const getCashInConfig = async () => {
-  const response = await fetch('https://private-00d723-paysera.apiary-proxy.com/cash-in');
-  return response.json();
-};
-
-const getCashOutNaturalPersonConfig = async () => {
-  const response = await fetch('https://private-00d723-paysera.apiary-proxy.com/cash-out-natural');
-  return response.json();
-};
-
-const getCashOutLegalPersonConfig = async () => {
-  const response = await fetch('https://private-00d723-paysera.apiary-proxy.com/cash-out-juridical');
-  return response.json();
-};
+const data = require(`../${process.argv[2]}`);
 
 const getWeekNumber = (date) => {
   const d = new Date(date);
@@ -34,7 +23,7 @@ const getWeekNumber = (date) => {
 
 const getFeeAmount = (amount, percents) => {
   const fractionDigits = 2;
-  return parseFloat(amount * percents / 100).toFixed(fractionDigits);
+  return parseFloat((amount * percents) / 100).toFixed(fractionDigits);
 };
 
 const getCashInFee = (amount, config) => {
@@ -49,37 +38,56 @@ const getCashInFee = (amount, config) => {
 
 const getCashOutFee = (transaction, totalCashOut, configs) => {
   const {
-    user_id, user_type, date, operation: { amount },
+    user_id: userID, user_type: userType, date, operation: { amount },
   } = transaction;
 
-  if (user_type === 'natural') {
+  if (userType === 'natural') {
     const { percents, week_limit: { amount: maxWeekAmount } } = configs.cashOutNaturalPersonConfig;
     const weekOfYear = getWeekNumber(date);
-    const cashOutAmount = totalCashOut?.[user_id]?.[weekOfYear] || 0;
+    const dateYear = new Date(date).getFullYear();
+    const cashOutAmount = totalCashOut?.[userID]?.[dateYear]?.[weekOfYear] || 0;
+    const totalCashOutByUser = {
+      ...totalCashOut,
+      [userID]: {
+        ...totalCashOut?.[userID],
+        [dateYear]: {
+          ...totalCashOut?.[userID]?.[dateYear],
+          [weekOfYear]: cashOutAmount + amount,
+        },
+      },
+    };
     if (cashOutAmount + amount > maxWeekAmount && cashOutAmount <= maxWeekAmount) {
-      totalCashOut[user_id] = {
-        [weekOfYear]: cashOutAmount + amount,
+      return {
+        totalCashOutByUser,
+        fee: getFeeAmount((cashOutAmount + amount - maxWeekAmount), percents),
       };
-      return getFeeAmount((cashOutAmount + amount - maxWeekAmount), percents);
     }
     if (cashOutAmount > maxWeekAmount) {
-      totalCashOut[user_id] = {
-        [weekOfYear]: cashOutAmount + amount,
+      return {
+        totalCashOutByUser,
+        fee: getFeeAmount(amount, percents),
       };
-      return getFeeAmount(amount, percents);
     }
-    return '0.00';
+    return {
+      fee: '0.00',
+    };
   }
 
-  if (user_type === 'juridical') {
+  if (userType === 'juridical') {
     const { percents, min: { amount: minFee } } = configs.cashOutLegalPersonConfig;
     const fee = getFeeAmount(amount, percents);
     if (fee <= minFee) {
       const fractionDigits = 2;
-      return minFee.toFixed(fractionDigits);
+      return {
+        fee: minFee.toFixed(fractionDigits),
+      };
     }
-    return fee;
+    return {
+      fee,
+    };
   }
+
+  return '';
 };
 
 async function getConfigs() {
@@ -96,14 +104,19 @@ async function getConfigs() {
 }
 
 const calculateCommission = async () => {
-  const totalCashOut = {};
+  let totalCashOut = {};
   const configs = await getConfigs();
   return data.map((transaction) => {
     const { type, operation: { amount } } = transaction;
     if (type === 'cash_in') {
       console.log(getCashInFee(amount, configs.cashInConfig));
     } else if (type === 'cash_out') {
-      console.log(getCashOutFee(transaction, totalCashOut, configs.cashOutConfigs));
+      const {
+        fee,
+        totalCashOutByUser,
+      } = getCashOutFee(transaction, totalCashOut, configs.cashOutConfigs);
+      totalCashOut = totalCashOutByUser;
+      console.log(fee);
     }
   });
 };

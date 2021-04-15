@@ -1,3 +1,3 @@
-const { calculateCommission } = require('./script');
+const { calculateCommission } = require('./src/script');
 
 calculateCommission();

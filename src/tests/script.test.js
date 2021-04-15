@@ -1,62 +1,8 @@
-const fetch = require('node-fetch');
 const {
-  getCashInConfig,
-  getCashOutNaturalPersonConfig,
-  getCashOutLegalPersonConfig,
   getWeekNumber,
   getCashInFee,
   getCashOutFee,
-} = require('./script');
-
-jest.mock('node-fetch');
-
-describe('Get cash in config', () => {
-  it('should return data from backend', async () => {
-    const expectedResponse = {
-      percents: 0.03,
-      max: {
-        amount: 5,
-        currency: 'EUR',
-      },
-    };
-    fetch.mockReturnValue(Promise.resolve({ json: () => Promise.resolve(expectedResponse) }));
-    const data = await getCashInConfig();
-
-    expect(data).toEqual(expectedResponse);
-  });
-});
-
-describe('Get cash out natural person config', () => {
-  it('should return data from backend', async () => {
-    const expectedResponse = {
-      percents: 0.3,
-      week_limit: {
-        amount: 1000,
-        currency: 'EUR',
-      },
-    };
-    fetch.mockReturnValue(Promise.resolve({ json: () => Promise.resolve(expectedResponse) }));
-    const data = await getCashOutNaturalPersonConfig();
-
-    expect(data).toEqual(expectedResponse);
-  });
-});
-
-describe('Get cash out legal person config', () => {
-  it('should return data from backend', async () => {
-    const expectedResponse = {
-      percents: 0.3,
-      min: {
-        amount: 0.5,
-        currency: 'EUR',
-      },
-    };
-    fetch.mockReturnValue(Promise.resolve({ json: () => Promise.resolve(expectedResponse) }));
-    const data = await getCashOutLegalPersonConfig();
-
-    expect(data).toEqual(expectedResponse);
-  });
-});
+} = require('../script');
 
 describe('Get week number for', () => {
   it('2016-01-05', () => {
@@ -106,7 +52,7 @@ describe('Cash out fee', () => {
     },
   };
 
-  const totalCashOut = {};
+  let totalCashOut = {};
 
   it('for 300.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
     const transaction = {
@@ -119,7 +65,9 @@ describe('Cash out fee', () => {
         currency: 'EUR',
       },
     };
-    expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('0.90');
+    const { fee, totalCashOutByUser } = getCashOutFee(transaction, totalCashOut, cashOutConfigs);
+    totalCashOut = totalCashOutByUser;
+    expect(fee).toBe('0.90');
   });
 
   it('for 30.00 EUR, user_id: 2, date: 2016-01-06, juridical person', () => {
@@ -133,7 +81,9 @@ describe('Cash out fee', () => {
         currency: 'EUR',
       },
     };
-    expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('0.50');
+    const { fee, totalCashOutByUser } = getCashOutFee(transaction, totalCashOut, cashOutConfigs);
+    totalCashOut = totalCashOutByUser;
+    expect(fee).toBe('0.50');
   });
 
   it('for 30000.00 EUR, user_id: 1, date: 2016-01-06, natural person', () => {
@@ -147,7 +97,9 @@ describe('Cash out fee', () => {
         currency: 'EUR',
       },
     };
-    expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('87.00');
+    const { fee, totalCashOutByUser } = getCashOutFee(transaction, totalCashOut, cashOutConfigs);
+    totalCashOut = totalCashOutByUser;
+    expect(fee).toBe('87.00');
   });
 
   it('for 1000 EUR, user_id: 1, date: 2016-01-07, natural person', () => {
@@ -161,7 +113,9 @@ describe('Cash out fee', () => {
         currency: 'EUR',
       },
     };
-    expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('3.00');
+    const { fee, totalCashOutByUser } = getCashOutFee(transaction, totalCashOut, cashOutConfigs);
+    totalCashOut = totalCashOutByUser;
+    expect(fee).toBe('3.00');
   });
 
   it('for 1000 EUR, user_id: 3, date: 2016-01-10, natural person', () => {
@@ -175,6 +129,8 @@ describe('Cash out fee', () => {
         currency: 'EUR',
       },
     };
-    expect(getCashOutFee(transaction, totalCashOut, cashOutConfigs)).toBe('0.00');
+    const { fee, totalCashOutByUser } = getCashOutFee(transaction, totalCashOut, cashOutConfigs);
+    totalCashOut = totalCashOutByUser;
+    expect(fee).toBe('0.00');
   });
 });
