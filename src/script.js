@@ -70,6 +70,7 @@ const getCashOutFee = (transaction, totalCashOut, configs) => {
     }
     return {
       fee: '0.00',
+      totalCashOutByUser,
     };
   }
 
@@ -80,14 +81,19 @@ const getCashOutFee = (transaction, totalCashOut, configs) => {
       const fractionDigits = 2;
       return {
         fee: minFee.toFixed(fractionDigits),
+        totalCashOutByUser: totalCashOut,
       };
     }
     return {
       fee,
+      totalCashOutByUser: totalCashOut,
     };
   }
 
-  return '';
+  return {
+    fee: '',
+    totalCashOutByUser: totalCashOut,
+  };
 };
 
 async function getConfigs() {
